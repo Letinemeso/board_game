@@ -1,3 +1,4 @@
+Object data
 |is_3d| <int> [1] "0"
 |coords| <float> [18] "100""600""0" "100""0""0" "700""0""0" "100""600""0" "700""0""0" "700""600""0"
 |texture_name| <string> [1] "resources/textures/field.png"
@@ -6,3 +7,8 @@
 |scale| <float> [3] "1""1""1"
 |rotation_axis| <float> [3] "0""1""0"
 |rotation_angle| <float> [1] "0"
+
+Field data
+|cell_count| <int> [1] "8"
+|cell_size| <float> [1] "74.5"
+|lu_cell_pos| <float> [2] "140""560"
