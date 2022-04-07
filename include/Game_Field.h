@@ -4,6 +4,7 @@
 #include "Event_Controller.h"
 #include "Resource_Loader.h"
 #include "Object.h"
+#include "Pawn.h"
 
 #include "Debug.h"
 
@@ -11,7 +12,7 @@
 class Game_Field : protected LEti::Object
 {
 private:
-	struct Cell { float x = 0, y = 0; bool occupied = false; };
+    struct Cell { float x = 0, y = 0; Pawn* pawn_in_cell = nullptr; };
 
 private:
 	float lu_cell_x = 0.0f, lu_cell_y = 0.0f;
@@ -32,6 +33,14 @@ public:
 
 public:
 	void draw() const override;
+
+public:
+    unsigned int get_cells_count() const;
+    Pawn* get_pawn_from_cell(unsigned int _row, unsigned int _column);
+    bool put_pawn_into_cell(unsigned int _row, unsigned int _column, Pawn* _pawn);
+    bool is_cell_empty(unsigned int _row, unsigned int _column) const;
+
+    std::pair<int, int> get_closest_cell(float _x, float _y) const;
 
 };
 

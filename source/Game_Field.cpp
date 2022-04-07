@@ -63,3 +63,62 @@ void Game_Field::draw() const
 {
 	LEti::Object::draw();
 }
+
+
+
+unsigned int Game_Field::get_cells_count() const
+{
+    return cells_count;
+}
+
+Pawn* Game_Field::get_pawn_from_cell(unsigned int _row, unsigned int _column)
+{
+    ASSERT(_row >= cells_count || _column >= cells_count || cells == nullptr);
+
+    Pawn* pawn = cells[_row][_column].pawn_in_cell;
+    cells[_row][_column].pawn_in_cell = nullptr;
+
+    return pawn;
+}
+
+bool Game_Field::put_pawn_into_cell(unsigned int _row, unsigned int _column, Pawn *_pawn)
+{
+    ASSERT(_row >= cells_count || _column >= cells_count || cells == nullptr);
+
+    if(cells[_row][_column].pawn_in_cell != nullptr) return false;
+
+    cells[_row][_column].pawn_in_cell = _pawn;
+    _pawn->set_cell_pos(cells[_row][_column].x, cells[_row][_column].y);
+    _pawn->get_current_cell() = {_row, _column};
+    return true;
+}
+
+bool Game_Field::is_cell_empty(unsigned int _row, unsigned int _column) const
+{
+    ASSERT(_row >= cells_count || _column >= cells_count || cells == nullptr);
+
+    return cells[_row][_column].pawn_in_cell == nullptr;
+}
+
+
+
+std::pair<int, int> Game_Field::get_closest_cell(float _x, float _y) const
+{
+    std::pair<int, int> result;
+    float x = (_x - lu_cell_x) / cell_size;
+    float y = (lu_cell_y - _y) / cell_size;
+
+    int x_int = (int)x;
+    int y_int = (int)y;
+
+    result.first = ( (float)x_int + 0.5f > x ? x_int : x_int + 1 );
+    result.second = ( (float)y_int + 0.5f > y ? y_int : y_int + 1 );
+
+    if(result.first < 0 || result.first >= cells_count || result.second < 0 || result.second >= cells_count || x < -0.5f || y < -0.5f)
+    {
+        result.first = -1;
+        result.second = -1;
+    }
+
+    return result;
+}
