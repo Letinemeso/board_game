@@ -44,7 +44,8 @@ public:
 	void set_snap_speed(float _speed);
 
 public:
-    std::pair<int, int>& get_current_cell();
+    void set_current_cell(const std::pair<int, int>& _cell);
+    const std::pair<int, int>& get_current_cell() const;
 
 private:
 	void snap_to_pos(float _x, float _y);

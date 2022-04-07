@@ -89,7 +89,7 @@ bool Game_Field::put_pawn_into_cell(unsigned int _row, unsigned int _column, Paw
 
     cells[_row][_column].pawn_in_cell = _pawn;
     _pawn->set_cell_pos(cells[_row][_column].x, cells[_row][_column].y);
-    _pawn->get_current_cell() = {_row, _column};
+    _pawn->set_current_cell({_row, _column});
     return true;
 }
 

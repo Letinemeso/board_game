@@ -42,7 +42,12 @@ void Pawn::set_snap_speed(float _speed)
 
 
 
-std::pair<int, int>& Pawn::get_current_cell()
+void Pawn::set_current_cell(const std::pair<int, int> &_cell)
+{
+    current_cell_index = _cell;
+}
+
+const std::pair<int, int>& Pawn::get_current_cell() const
 {
     return current_cell_index;
 }

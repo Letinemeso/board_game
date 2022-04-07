@@ -3,8 +3,7 @@
 #include "Camera.h"
 #include "Resource_Loader.h"
 
-#include "include/Game_Field.h"
-#include "include/Pawn.h"
+#include "include/Game_Controller.h"
 
 #include <thread>
 
@@ -28,22 +27,13 @@ int main()
 
 	LEti::Resource_Loader::load_object("bgr", "resources/models/background.mdl");
 	LEti::Resource_Loader::load_object("field", "resources/models/field.mdl");
-	LEti::Resource_Loader::load_object("pawn", "resources/models/pawn.mdl");
-
-    Pawn pawn;
-    pawn.init("pawn");
-//    pawn.set_cell_pos(300.0f, 300.0f);
-    pawn.set_snap_speed(0.0f);
-    pawn.set_status(Pawn::Status::snap_to_cell);
+    LEti::Resource_Loader::load_object("pawn_cross", "resources/models/pawn_cross.mdl");
+    LEti::Resource_Loader::load_object("pawn_circle", "resources/models/pawn_circle.mdl");
 
 	LEti::Object background;
 	background.init("bgr");
 
-	Game_Field field;
-	field.init("field");
-    field.put_pawn_into_cell(0, 0, &pawn);
-
-    Pawn* held_pawn = nullptr;
+    Game_Controller controller("field", "pawn_cross", "pawn_circle");
 
 	while (!LEti::Event_Controller::window_should_close())
 	{
@@ -52,36 +42,11 @@ int main()
 		LEti::Event_Controller::update();
 		LEti::Camera::update(true, false);
 
-        pawn.update();
+        controller.update();
 
-        if(held_pawn != nullptr)
-        {
-            if (LEti::Event_Controller::mouse_button_was_released(GLFW_MOUSE_BUTTON_LEFT) && held_pawn->get_status() != Pawn::Status::idle)
-            {
-                std::pair<int, int> closest_cell = field.get_closest_cell(LEti::Event_Controller::get_cursor_position().x, LEti::Event_Controller::get_cursor_position().y);
-                if(closest_cell.first != -1)
-                    field.put_pawn_into_cell(closest_cell.first, closest_cell.second, held_pawn);
-                else
-                    field.put_pawn_into_cell(held_pawn->get_current_cell().first, held_pawn->get_current_cell().second, held_pawn);
-                held_pawn->set_snap_speed(0.5f);
-                held_pawn->set_status(Pawn::Status::snap_to_cell);
-                held_pawn = nullptr;
-            }
-        }
-        if(LEti::Event_Controller::mouse_button_was_pressed(GLFW_MOUSE_BUTTON_LEFT))
-        {
-            std::pair<int, int> closest_cell = field.get_closest_cell(LEti::Event_Controller::get_cursor_position().x, LEti::Event_Controller::get_cursor_position().y);
-            if(closest_cell.first != -1)
-                held_pawn = field.get_pawn_from_cell(closest_cell.first, closest_cell.second);
-            if(held_pawn != nullptr)
-            {
-                held_pawn->set_snap_speed(0.05f);
-                held_pawn->set_status(Pawn::Status::snap_to_cursor);
-            }
-        }
 		background.draw();
-		field.draw();
-        pawn.draw();
+
+        controller.draw();
 
 		LEti::Event_Controller::swap_buffers();
 	}
