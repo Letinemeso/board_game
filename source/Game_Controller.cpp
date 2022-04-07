@@ -30,7 +30,7 @@ Game_Controller::~Game_Controller()
 
 
 
-bool Game_Controller::pawn_was_in_this_cell(const std::pair<int, int>& _cell, const Pawn *_pawn) const
+bool Game_Controller::pawn_is_in_this_cell(const std::pair<int, int>& _cell, const Pawn *_pawn) const
 {
     return _pawn->get_current_cell().first == _cell.first && _pawn->get_current_cell().second == _cell.second;
 }
@@ -40,6 +40,14 @@ bool Game_Controller::cell_is_next_to_pawn(const std::pair<int, int> &_cell, con
     auto ppos = _pawn->get_current_cell();
     return (abs(ppos.first - _cell.first) == 1 && abs(ppos.second - _cell.second) == 0)
             || (abs(ppos.first - _cell.first) == 0 && abs(ppos.second - _cell.second) == 1);
+}
+
+bool Game_Controller::pawn_belongs_to_current_player(const Pawn *_pawn) const
+{
+    if(_pawn == nullptr) return false;
+    for(unsigned int i=0; i<pawns_per_player; ++i)
+        if(*_pawn == pawns[current_player][i]) return true;
+    return false;
 }
 
 
@@ -56,7 +64,7 @@ void Game_Controller::update()
         {
             std::pair<int, int> closest_cell = field.get_closest_cell(LEti::Event_Controller::get_cursor_position().x, LEti::Event_Controller::get_cursor_position().y);
             if(closest_cell.first != -1 && field.is_cell_empty(closest_cell.first, closest_cell.second) &&
-                    !pawn_was_in_this_cell(closest_cell, held_pawn) && cell_is_next_to_pawn(closest_cell, held_pawn))
+                    !pawn_is_in_this_cell(closest_cell, held_pawn) && cell_is_next_to_pawn(closest_cell, held_pawn))
             {
                 field.put_pawn_into_cell(closest_cell.first, closest_cell.second, held_pawn);
                 current_player = (current_player == 0 ? 1 : 0);
@@ -74,15 +82,11 @@ void Game_Controller::update()
         std::pair<int, int> closest_cell = field.get_closest_cell(LEti::Event_Controller::get_cursor_position().x, LEti::Event_Controller::get_cursor_position().y);
         if(closest_cell.first != -1)
         {
-            for(unsigned int i=0; i<pawns_per_player; ++i)
+            if(pawn_belongs_to_current_player(field.peek_at_pawn_in_cell(closest_cell.first, closest_cell.second)))
             {
-                if(pawn_was_in_this_cell(closest_cell, &pawns[current_player][i]))
-                {
-                    held_pawn = field.get_pawn_from_cell(closest_cell.first, closest_cell.second);
-                    held_pawn->set_snap_speed(0.05f);
-                    held_pawn->set_status(Pawn::Status::snap_to_cursor);
-                    break;
-                }
+                held_pawn = field.get_pawn_from_cell(closest_cell.first, closest_cell.second);
+                held_pawn->set_snap_speed(0.05f);
+                held_pawn->set_status(Pawn::Status::snap_to_cursor);
             }
         }
     }

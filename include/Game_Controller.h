@@ -26,8 +26,9 @@ public:
     ~Game_Controller();
 
 private:
-    bool pawn_was_in_this_cell(const std::pair<int, int>& _cell, const Pawn* _pawn) const;
+    bool pawn_is_in_this_cell(const std::pair<int, int>& _cell, const Pawn* _pawn) const;
     bool cell_is_next_to_pawn(const std::pair<int, int>& _cell, const Pawn* _pawn) const;
+    bool pawn_belongs_to_current_player(const Pawn* _pawn) const;
 
 public:
     void update();

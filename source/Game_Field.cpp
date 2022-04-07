@@ -93,6 +93,15 @@ bool Game_Field::put_pawn_into_cell(unsigned int _row, unsigned int _column, Paw
     return true;
 }
 
+
+
+const Pawn* Game_Field::peek_at_pawn_in_cell(unsigned int _row, unsigned int _column) const
+{
+    ASSERT(_row >= cells_count || _column >= cells_count || cells == nullptr);
+
+    return cells[_row][_column].pawn_in_cell;
+}
+
 bool Game_Field::is_cell_empty(unsigned int _row, unsigned int _column) const
 {
     ASSERT(_row >= cells_count || _column >= cells_count || cells == nullptr);

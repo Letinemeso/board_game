@@ -38,6 +38,8 @@ public:
     unsigned int get_cells_count() const;
     Pawn* get_pawn_from_cell(unsigned int _row, unsigned int _column);
     bool put_pawn_into_cell(unsigned int _row, unsigned int _column, Pawn* _pawn);
+
+    const Pawn* peek_at_pawn_in_cell(unsigned int _row, unsigned int _column) const;
     bool is_cell_empty(unsigned int _row, unsigned int _column) const;
 
     std::pair<int, int> get_closest_cell(float _x, float _y) const;

@@ -54,6 +54,14 @@ const std::pair<int, int>& Pawn::get_current_cell() const
 
 
 
+bool Pawn::operator==(const Pawn &_other) const
+{
+    return current_cell_index.first == _other.current_cell_index.first
+            && current_cell_index.second == _other.current_cell_index.second;
+}
+
+
+
 void Pawn::snap_to_pos(float _x, float _y)
 {
 	if (snap_speed < 0.0001f)

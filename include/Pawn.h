@@ -47,6 +47,9 @@ public:
     void set_current_cell(const std::pair<int, int>& _cell);
     const std::pair<int, int>& get_current_cell() const;
 
+public:
+    bool operator==(const Pawn& _other) const;
+
 private:
 	void snap_to_pos(float _x, float _y);
 
