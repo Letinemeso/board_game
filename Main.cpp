@@ -294,6 +294,7 @@ int main()
 }*/
 
 #include <iostream>
+#include "EIPF.h"
 #include "Tree.h"
 
 enum class direction
@@ -489,24 +490,28 @@ int main()
             node[i][j] = false;
     }
 
+    LEti::EIPF path_finder;
+
     node[1][2] = true;
     node[1][3] = true;
     node[2][3] = true;
     node[3][1] = true;
     node[3][2] = true;
 
-    node[2][1] = true;
+//    node[2][1] = true;
 
     intp cur = {2, 2};
     intp dest = {3, 3};
 
 
-    std::cout << cur << '\n';
-    while(cur != dest && cur != intp(-1, -1))
-    {
-        cur = find_next_step(cur, dest, node, 5, 5);
-        std::cout << cur << "\n";
-    }
+
+
+//    std::cout << cur << '\n';
+//    while(cur != dest && cur != intp(-1, -1))
+//    {
+//        cur = find_next_step(cur, dest, node, 5, 5);
+//        std::cout << cur << "\n";
+//    }
 
 
     return 0;
