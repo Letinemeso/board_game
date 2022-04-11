@@ -294,6 +294,7 @@ int main()
 }*/
 
 #include <iostream>
+#include "Tree.h"
 
 enum class direction
 {
@@ -344,148 +345,168 @@ struct intp
     }
 };
 
+unsigned int get_distance(const intp& _first, const intp& _second)
+{
+    return abs(_first.x - _second.x) + abs(_first.y - _second.y);
+}
+
 std::ostream& operator<<(std::ostream& _stream, const intp& _data)
 {
     _stream << _data.x << '\t' << _data.y;
     return _stream;
 }
 
+//LEti::Tree<intp, 3> tree;
 
-struct tree_node
+
+bool is_step_unique(const intp& _step, LEti::Tree<intp, 3>& _tree)
 {
-    intp data;
+    auto iter = _tree.create_iterator();
 
-    tree_node* parent = nullptr;
+    if(!iter.valid()) return true;
 
-    tree_node* next = nullptr;
-    tree_node* next_alt = nullptr;
-
-    tree_node(const intp& _data) : data(_data) { }
-};
-
-
-bool is_step_unique(const intp& _step, const tree_node* _node)
-{
-    if(_node == nullptr) return true;
-    if(_node->data == _step) return false;
-    if(_node->parent == nullptr) return true;
-
-    if(_node->parent->next_alt == _node)
+    while(!iter.end())
     {
-        tree_node* ptr = _node->parent;
-        if(ptr->next == nullptr) return is_step_unique(_step, _node->parent);
-        ptr = ptr->next;
-        while(ptr->next_alt != nullptr)
-        {
-            ptr = ptr->next;
-        }
-        return is_step_unique(_step, ptr);
+        if(*iter == _step) return false;
+        ++iter;
     }
-    else
-        return is_step_unique(_step, _node->parent);
+    if(*iter == _step) return false;
 
-    return is_step_unique(_step, _node->parent);
-}
-
-void add_after(tree_node* _node, bool alt, const intp& _data)
-{
-    if(alt)
-    {
-        tree_node* ptr = _node->next_alt;
-        _node->next_alt = new tree_node(_data);
-        _node->next_alt->parent = _node;
-        _node->next_alt->next = ptr;
-        ptr->parent = _node->next_alt;
-    }
-    else
-    {
-        tree_node* ptr = _node->next;
-        _node->next = new tree_node(_data);
-        _node->next->parent = _node;
-        _node->next->next = ptr;
-        ptr->parent = _node->next;
-    }
-}
-
-void delete_branch(tree_node* _node)
-{
-    if(_node->next_alt == nullptr && _node->next == nullptr)
-    {
-        delete _node;
-        return;
-    }
-    delete_branch(_node->next_alt);
-    delete_branch(_node->next);
+    return true;
 }
 
 
-constexpr int size = 4;
-bool node[size][size] = {{false}};
+//constexpr int size = 5;
+//bool node[size][size] = {{false}};
 
-bool out_of_bounds(const intp& _ind)
+bool out_of_bounds(const intp& _ind, unsigned int _size_x, unsigned int _size_y)
 {
-    return !(_ind.x < 0 || _ind.y < 0 || _ind.x >= size || _ind.y >= size);
+    return _ind.x < 0 || _ind.y < 0 || _ind.x >= _size_x || _ind.y >= _size_y;
 }
 
 
-bool at(const intp& _ind)
+bool at(const intp& _ind, const bool* const* const _field)
 {
-    return node[_ind.x][_ind.y];
+    return _field[_ind.x][_ind.y];
+}
+
+bool can_move_here(const intp& _where, const bool* const* const _field, unsigned int _size_x, unsigned int _size_y, LEti::Tree<intp, 3>& _tree)
+{
+    if(out_of_bounds(_where, _size_x, _size_y)) return false;
+    if(at(_where, _field)) return false;
+    return is_step_unique(_where, _tree);
 }
 
 #include "Utility.h"
 
-//tree_node* find_closer_alt_path(const intp& _dest, float _next_step_dist, tree_node* _node, tree_node* _last)
-//{
-//    if(!_node) return nullptr;
+std::pair<LEti::Tree<intp, 3>::Iterator, intp> find_closest_pos(const intp& _dest, const bool* const* const _field, unsigned int _size_x, unsigned int _size_y, LEti::Tree<intp, 3>& _tree)
+{
+    auto iter = _tree.create_iterator();
 
-//    direction d = direction::up;
+    unsigned int min_dist = -1;
+    intp min_dist_pos = {-1, -1};
+    LEti::Tree<intp, 3>::Iterator mdp_parent = iter;
 
-//    unsigned int i = 0;
-//    for(; i<4; ++i)
-//    {
-//        intp temp = _node->data.after_movement(d);
-//        if(at(temp) || !is_step_unique(temp, _last) || !out_of_bounds(temp))
-//            rotate_cw(d);
-//        else break;
-//    }
+    while(!iter.end())
+    {
+        direction d = direction::up;
+        for(unsigned int i=0; i<4; ++i)
+        {
+            if(!can_move_here((*iter).after_movement(d), _field, _size_x, _size_y, _tree)) { rotate_cw(d); continue; }
+            unsigned int local_min_dist = get_distance(*iter, _dest);
+            if(local_min_dist < min_dist)
+            {
+                min_dist = local_min_dist;
+                min_dist_pos = (*iter).after_movement(d);
+                mdp_parent = iter;
+            }
+            rotate_cw(d);
+        }
+        ++iter;
+    }
+    direction d = direction::up;
+    for(unsigned int i=0; i<4; ++i)
+    {
+        if(!can_move_here((*iter).after_movement(d), _field, _size_x, _size_y, _tree)) { rotate_cw(d); continue; }
+        unsigned int local_min_dist = get_distance(*iter, _dest);
+        if(local_min_dist < min_dist)
+        {
+            min_dist = local_min_dist;
+            min_dist_pos = (*iter).after_movement(d);
+            mdp_parent = iter;
+        }
+        rotate_cw(d);
+    }
 
-//    if(i==4)
-//    {
-//        if(_node->parent->next_alt == _node)
-//        {
-//            tree_node* ptr = _node->parent;
-//            while(ptr->next != nullptr)
-//                ptr = ptr->next;
-//            return find_closer_alt_path(_step, ptr);
-//        }
-//        else
-//            return find_closer_alt_path(_step, _node->parent);
+    return {mdp_parent, min_dist_pos};
+}
 
-//        return find_closer_alt_path(_step, _node->parent);
-//    }
+intp find_next_step(const intp& _current_pos, const intp& _destination, const bool* const* const _field, unsigned int _size_x, unsigned int _size_y)
+{
+    LEti::Tree<intp, 3> l_tree;
+    auto iter = l_tree.create_iterator();
+    iter.insert_into_availible_index(_current_pos);
+
+    unsigned int count = 1;
+
+    while(true)
+    {
+        auto a = find_closest_pos(_destination, _field, _size_x, _size_y, l_tree);
+        if(a.second == intp(-1, -1))
+            break;
+
+        a.first.descend( a.first.insert_into_availible_index(a.second) );
+        iter = a.first;
+
+        ++count;
+
+        if(*iter == _destination)
+            break;
+    }
+
+    if(count < 2) return { -1, -1 };
+
+    unsigned int second_index = 0;
+    while(!iter.begin())
+        second_index = iter.ascend();
+
+    iter.descend(second_index);
+    return *iter;
+}
 
 
-//}
+
+
+
 
 int main()
 {
-    intp start = {1, 0};
-    intp dest = {3, 1};
-    node[0][2] = true;
+    bool** node = new bool * [5];
+    for(unsigned int i=0; i<5; ++i)
+    {
+        node[i] = new bool[5];
+        for(unsigned int j=0; j<5; ++j)
+            node[i][j] = false;
+    }
+
     node[1][2] = true;
-    node[2][2] = true;
+    node[1][3] = true;
+    node[2][3] = true;
+    node[3][1] = true;
+    node[3][2] = true;
+
     node[2][1] = true;
-    intp cur = {1, 0};
+
+    intp cur = {2, 2};
+    intp dest = {3, 3};
 
 
-
-    tree_node* head = new tree_node(cur);
-    tree_node* last = head;
-
-
-
-
+    std::cout << cur << '\n';
+    while(cur != dest && cur != intp(-1, -1))
+    {
+        cur = find_next_step(cur, dest, node, 5, 5);
+        std::cout << cur << "\n";
+    }
 
 
     return 0;
