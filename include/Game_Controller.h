@@ -6,6 +6,7 @@
 #include "Event_Controller.h"
 #include "Resource_Loader.h"
 
+#include "AI.h"
 #include "Game_Field.h"
 #include "Pawn.h"
 
@@ -20,6 +21,8 @@ private:
     Game_Field field;
 
     int current_player = 0;
+
+    AI ai;
 
 public:
     Game_Controller(const char* _field_object, const char* _1_player_pawn_object, const char* _2_player_pawn_object);
