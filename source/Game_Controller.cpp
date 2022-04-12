@@ -75,31 +75,44 @@ void Game_Controller::update()
 
 	if (current_player == 1)
 	{
-		//update map
-		for (unsigned int i = 0; i < field.get_cells_count(); ++i)
-			for (unsigned int j = 0; j < field.get_cells_count(); ++j)
-				if (field.peek_at_pawn_in_cell(i, j)) ai.field_element(i, j) = true;
-				else ai.field_element(i, j) = false;
+		bool can_make_move = true;
+		for (unsigned int i = 0; i < pawns_per_player; ++i)
+		{
+			if (pawns[0][i].get_status() == Pawn::Status::snap_to_cell)
+			{
+				can_make_move = false;
+				break;
+			}
+		}
 
-		ai.set_pawn_and_destination();
-		auto& pwn = ai.get_pawn_to_move_next();
-		ai.set_start_pos(pwn.get_current_cell().first, pwn.get_current_cell().second);
-		ai.build_path();
-		auto test = ai.get_next_step();
+		if (can_make_move)
+		{
+			//update map
+			for (unsigned int i = 0; i < field.get_cells_count(); ++i)
+				for (unsigned int j = 0; j < field.get_cells_count(); ++j)
+					if (field.peek_at_pawn_in_cell(i, j)) ai.field_element(i, j) = true;
+					else ai.field_element(i, j) = false;
 
-		held_pawn = field.get_pawn_from_cell(pwn.get_current_cell().first, pwn.get_current_cell().second);
+			ai.set_pawn_and_destination();
+			auto& pwn = ai.get_pawn_to_move_next();
+			ai.set_start_pos(pwn.get_current_cell().first, pwn.get_current_cell().second);
+			//ai.build_path();
+			auto test = ai.get_next_step();
 
-		if (held_pawn->get_current_cell().first == test.first && held_pawn->get_current_cell().second == test.second)
-			held_pawn->set_snap_speed(-0.5f);
-		else
-			held_pawn->set_snap_speed(0.5f);
+			held_pawn = field.get_pawn_from_cell(pwn.get_current_cell().first, pwn.get_current_cell().second);
 
-		field.put_pawn_into_cell(test.first, test.second, held_pawn);
+			if (held_pawn->get_current_cell().first == test.first && held_pawn->get_current_cell().second == test.second)
+				held_pawn->set_snap_speed(-0.5f);
+			else
+				held_pawn->set_snap_speed(0.5f);
 
-		held_pawn->set_status(Pawn::Status::snap_to_cell);
-		held_pawn = nullptr;
+			field.put_pawn_into_cell(test.first, test.second, held_pawn);
 
-		current_player = (current_player == 0 ? 1 : 0);
+			held_pawn->set_status(Pawn::Status::snap_to_cell);
+			held_pawn = nullptr;
+
+			current_player = (current_player == 0 ? 1 : 0);
+		}
 	}
 	else
 	{

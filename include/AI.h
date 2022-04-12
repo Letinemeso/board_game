@@ -23,6 +23,7 @@ private:
 	unsigned int m_ai_base_width = 0, m_ai_base_height = 0;
 	ipair_pair m_player_base;
 	unsigned int m_player_base_width = 0, m_player_base_height = 0;
+	i_pair m_players_base_corner;
 
 public:
 	void set_pawns(const Pawn* _ai_pawns, unsigned int _ai_pawns_count, const Pawn* _player_pawns, unsigned int _player_pawns_count);
@@ -32,6 +33,10 @@ public:
 private:
 	bool pawn_is_on_players_base(const Pawn* _pawn) const;
 	bool pawn_can_move(const Pawn* _pawn) const;
+	i_pair find_furthest_free_cell(const i_pair& _corner, const i_pair& _prev) const;
+
+private:
+	void build_path() override;
 
 public:
 	const Pawn& get_pawn_to_move_next() const;

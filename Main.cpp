@@ -15,7 +15,6 @@
 
 int main()
 {
-
 	LEti::Event_Controller::init_and_create_window(800, 600, "Board Game");
 
 	glEnable(GL_BLEND);
@@ -60,8 +59,8 @@ int main()
     return 0;
 }
 
-/*
-#include <iostream>
+
+/*#include <iostream>
 #include "EIPF.h"
 #include "Tree.h"
 
@@ -252,7 +251,7 @@ int main()
 {
     bool node[5][5] = { {false} };
 
-    LEti::EIPF path_finder;
+    //LEti::EIPF path_finder;
 
     node[1][2] = true;
     node[1][3] = true;
@@ -260,29 +259,32 @@ int main()
     node[3][1] = true;
     node[3][2] = true;
 
-    node[2][1] = true;
 
     intp cur = {2, 2};
     intp dest = {3, 3};
 
-    LEti::EIPF pathfinder;
-    pathfinder.set_field_size(5, 5);
-    pathfinder.set_start_pos(cur.x, cur.y);
-    pathfinder.set_destination(dest.x, dest.y);
-
-    for (unsigned int i = 0; i < 5; ++i)
+    while (true)
     {
-        for (unsigned int j = 0; j < 5; ++j)
-            pathfinder.field_element(i, j) = node[i][j];
+        LEti::EIPF* pathfinder = new LEti::EIPF;
+        pathfinder->set_field_size(5, 5);
+        pathfinder->set_start_pos(cur.x, cur.y);
+        pathfinder->set_destination(dest.x, dest.y);
+
+        for (unsigned int i = 0; i < 5; ++i)
+        {
+            for (unsigned int j = 0; j < 5; ++j)
+                pathfinder->field_element(i, j) = node[i][j];
+        }
+
+        pathfinder->build_path();
+
+        //auto path = pathfinder.get_full_path();
+        auto next_step = pathfinder->get_next_step();
+
+        delete pathfinder;
     }
-
-    pathfinder.build_path();
-
-    //auto path = pathfinder.get_full_path();
-    auto next_step = pathfinder.get_next_step();
-
 	//for (unsigned int i = 0; i < path.size(); ++i)
-        std::cout << next_step.first << '\t' << next_step.second << '\n';
+        //std::cout << next_step.first << '\t' << next_step.second << '\n';
 
 
 
