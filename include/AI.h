@@ -33,7 +33,8 @@ public:
 private:
 	bool pawn_is_on_players_base(const Pawn* _pawn) const;
 	bool pawn_can_move(const Pawn* _pawn) const;
-	i_pair find_furthest_free_cell(const i_pair& _corner, const i_pair& _prev) const;
+    i_pair find_furthest_free_cell_on_base(const i_pair& _corner, const i_pair& _prev) const;
+    i_pair find_furthest_free_cell(const i_pair& _corner, const i_pair& _prev) const;
 
 private:
 	void build_path() override;
