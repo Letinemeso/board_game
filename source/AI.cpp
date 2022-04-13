@@ -178,7 +178,7 @@ void AI::set_pawn_and_destination()
     {
         i_pair where_to = find_furthest_free_cell(m_players_base_corner, { -1, -1 });
         min_steps = 0;
-//        while (where_to.first != -1)
+
         while (min_steps == 0 && where_to.first != -1)
         {
             for (unsigned int p = 0; p < m_ai_pawns_count; ++p)

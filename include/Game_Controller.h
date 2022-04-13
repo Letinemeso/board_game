@@ -21,6 +21,7 @@ private:
     Game_Field field;
 
     int current_player = 0;
+    int winner = -1;
 
     AI ai;
 
@@ -32,6 +33,8 @@ private:
     bool pawn_is_in_this_cell(const std::pair<int, int>& _cell, const Pawn* _pawn) const;
     bool cell_is_next_to_pawn(const std::pair<int, int>& _cell, const Pawn* _pawn) const;
     bool pawn_belongs_to_current_player(const Pawn* _pawn) const;
+
+    int player_won();
 
 public:
     void update();

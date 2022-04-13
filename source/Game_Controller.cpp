@@ -66,6 +66,52 @@ bool Game_Controller::pawn_belongs_to_current_player(const Pawn* _pawn) const
 }
 
 
+int Game_Controller::player_won()
+{
+    bool won = true;
+
+    for(unsigned int i=0; i<=2; ++i)
+    {
+        for(unsigned int j=0; j<=2; ++j)
+        {
+            for(unsigned int p=0; p < pawns_per_player; ++p)
+            {
+                if(field.peek_at_pawn_in_cell(i, j) == &pawns[0][p] || field.peek_at_pawn_in_cell(i, j) == nullptr)
+                {
+                    won = false;
+                    break;
+                }
+            }
+            if(!won) break;
+        }
+        if(!won) break;
+    }
+    if(won) return 1;
+
+    won = true;
+
+    for(unsigned int i=5; i<=7; ++i)
+    {
+        for(unsigned int j=5; j<=7; ++j)
+        {
+            for(unsigned int p=0; p < pawns_per_player; ++p)
+            {
+                if(field.peek_at_pawn_in_cell(i, j) == &pawns[1][p] || field.peek_at_pawn_in_cell(i, j) == nullptr)
+                {
+                    won = false;
+                    break;
+                }
+            }
+            if(!won) break;
+        }
+        if(!won) break;
+    }
+    if(won) return 0;
+
+    return -1;
+}
+
+
 
 void Game_Controller::update()
 {
@@ -73,6 +119,7 @@ void Game_Controller::update()
 		for (unsigned int j = 0; j < pawns_per_player; ++j)
 			pawns[i][j].update();
 
+    if(winner != -1) return;
 	if (current_player == 1)
 	{
 		bool can_make_move = true;
@@ -111,6 +158,8 @@ void Game_Controller::update()
 			held_pawn->set_status(Pawn::Status::snap_to_cell);
 			held_pawn = nullptr;
 
+            winner = player_won();
+
 			current_player = (current_player == 0 ? 1 : 0);
 		}
 	}
@@ -133,6 +182,8 @@ void Game_Controller::update()
 				held_pawn->set_snap_speed(0.5f);
 				held_pawn->set_status(Pawn::Status::snap_to_cell);
 				held_pawn = nullptr;
+
+                winner = player_won();
 			}
 		}
 		if (LEti::Event_Controller::mouse_button_was_pressed(GLFW_MOUSE_BUTTON_LEFT))
