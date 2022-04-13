@@ -28,7 +28,6 @@ int main()
 
 	LEti::Camera::setup_orthographic_matrix();
 
-
 	LEti::Resource_Loader::load_object("bgr", "resources/models/background.mdl");
 	LEti::Resource_Loader::load_object("field", "resources/models/field.mdl");
     LEti::Resource_Loader::load_object("pawn_cross", "resources/models/pawn_cross.mdl");
